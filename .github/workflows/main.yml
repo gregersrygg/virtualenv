@@ -1,0 +1,32 @@
+name: Test create virtualenv master
+on: 
+  push:
+  pull_request:
+
+jobs:
+  build_samples:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        python: [3.7, 3.8]
+    steps:
+    - uses: actions/checkout@v2
+ 
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Install virtualenv
+      run: |
+        curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+        python get-pip.py pip==19.3.1
+        python -m pip install -I 'pipenv==2018.11.26'
+        python -m pip install -e .
+        python -m pip list
+
+    - name: Create virtualenv
+      run: pipenv -vvv install
